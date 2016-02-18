@@ -30,7 +30,9 @@ class xkcd {
                 self::validate_case();
                 self::validate_end_num();
                 self::validate_end_special();
-                self::generate_password();
+                if (!array_key_exists('errors', $_SESSION)) {
+                        self::generate_password();
+                }
         }
 
         static private function generate_password() {
@@ -223,7 +225,7 @@ class xkcd {
 
         static private function validate_end_special() {
                 if (!array_key_exists('end_special', $_POST)) {
-                        $_POST['end_special'] = self::$END_CHAR_DEFAULT;
+                        $_POST['end_special'] = self::$END_SPECIAL_DEFAULT;
                         $_POST['add_this_char'] = self::$ADD_THIS_CHAR_DEFAULT;
                 } else {
                         if ($_POST['end_special'] == "specific") {
