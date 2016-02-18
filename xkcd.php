@@ -30,8 +30,142 @@ class xkcd {
                 self::validate_case();
                 self::validate_end_num();
                 self::validate_end_special();
+                self::generate_password();
         }
 
+        static private function generate_password() {
+                $min_length = (int) $_POST['min_chars'];
+                $min_length = $min_length - (int) $_POST['num_words'] + 1;
+                $min_length = $min_length - (strcmp($_POST['separator'], "none") == 0 ? 0 : 1);
+                $min_length = $min_length - (strcmp($_POST['end_num'], "none") == 0 ? 0 : 1);
+                $min_length = $min_length - (strcmp($_POST['end_special'], "none") == 0 ? 0 : 1);
+                
+                $separator = self::getSeparator();
+                $end_num = self::getEndNum();
+                $end_special = self::getEndSpecial();
+                $new_words = [];
+                $new_words = self::generate_words($_POST['min_chars'], (int) $_POST['num_words']);
+                $_SESSION['password'] = "";
+                for ($i = 0; $i < count($new_words); $i++) {
+                        if (strlen($_SESSION['password']) == 0) {
+                                $_SESSION['password'] = self::applyCase($_SESSION['words'][$new_words[$i]]);
+                        } else {
+                                $_SESSION['password'] = $_SESSION['password'].$separator.self::applyCase($_SESSION['words'][$new_words[$i]]);
+                        }
+                }
+                if (strlen($end_num) > 0) {
+                        $_SESSION['password'] = $_SESSION['password'].$end_num;
+                }
+                if (strlen($end_special) > 0) {
+                        $_SESSION['password'] = $_SESSION['password'].$end_special;
+                }
+        }
+        
+        static private function applyCase($word) {
+                switch ($_POST['case']) {
+                        case "lower":
+                                return strtolower($word);
+                        case "upper":
+                                return strtoupper($word);
+                        case "camel":
+                                return ucfirst($word);
+                }
+        }
+        
+        static private function getSeparator() {
+                switch ($_POST['separator']) {
+                        case "dash":
+                                return "-";
+                        case "underscore":
+                                return "_";
+                        case "period":
+                                return ".";
+                        case "hash":
+                                return "#";
+                        case "none":
+                                return "";
+                }
+        }
+        
+        static private function getEndNum() {
+                switch ($_POST['end_num']) {
+                        case "none":
+                                return "";
+                        case "random":
+                                return strval(rand(0, 9));
+                        case "specific":
+                                return $_POST['add_this_num'];
+                }
+        }
+        
+        static private function getEndSpecial() {
+                switch ($_POST['end_special']) {
+                        case "none":
+                                return "";
+                        case "random":
+                                $index = rand(0, 17);
+                                switch ($index) {
+                                        case 0:
+                                                return "!";
+                                        case 1:
+                                                return "@";
+                                        case 2:
+                                                return "$";
+                                        case 3:
+                                                return "%";
+                                        case 4:
+                                                return "^";
+                                        case 5:
+                                                return "&";
+                                        case 6:
+                                                return "*";
+                                        case 7:
+                                                return "-";
+                                        case 8:
+                                                return "_";
+                                        case 9:
+                                                return "+";
+                                        case 10:
+                                                return "=";
+                                        case 11:
+                                                return ":";
+                                        case 12:
+                                                return "|";
+                                        case 13:
+                                                return "~";
+                                        case 14:
+                                                return "?";
+                                        case 15:
+                                                return "/";
+                                        case 16:
+                                                return ".";
+                                        case 17:
+                                                return ";";
+                                }
+                                
+                        case "specific":
+                                return $_POST['add_this_char'];
+                }
+        }
+        
+        static private function generate_words($min_length, $num_words) {
+             $total_words = count($_SESSION['words']);
+             $word_index = [];
+             $total_length = 0;
+             while (count($word_index) < $num_words) {
+                     $new_index = rand(0, $total_words - 1);
+                     if (!in_array($new_index, $word_index)) {
+                             $word_index[] = $new_index;
+                             $total_length = $total_length + strlen($_SESSION['words'][$new_index]);
+                     }
+             }
+             if ($total_length < $min_length) {
+                     return self::generate_words($min_length, $num_words);
+             } else {
+                     return $word_index;
+             }
+        }
+        
         static private function validate_min_chars() {
                 if (!array_key_exists('min_chars', $_POST)) {
                         $_POST['min_chars'] = self::$MIN_CHAR_DEFAULT;

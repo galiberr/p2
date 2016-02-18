@@ -12,6 +12,7 @@ xkcd::init();
                 <link rel="stylesheet" type="text/css" href="./css/styles.css" />
         </head>
         <body>
+                <div>Your new password is <?php echo $_SESSION['password'] ?></div>
                 <ul>
                 <?php
                 if (array_key_exists('errors', $_SESSION)) {
@@ -65,13 +66,6 @@ xkcd::init();
                                 <tr><td><input type="submit" value="Submit"></td><td></td></tr>
                         </table>
                 </form>
-                <ul>
-                        <li>Layout</li>
-                        <ul>
-                                <li>Error messages</li>
-                                <li>Expand/collapse menus</li>
-                        </ul>
-                </ul>
         </p>
 </body>
 </html>

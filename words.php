@@ -38,7 +38,7 @@ function read_words() {
         $new_word_array = [];
         $word_file_ptr = fopen($word_file, 'r') or die('Unable to open words.txt initialization file.');
         while(!feof($word_file_ptr)) {
-                $new_word_array[] = fgets($word_file_ptr);
+                $new_word_array[] = trim(fgets($word_file_ptr));
         }
         fclose($word_file_ptr);
         return $new_word_array;
