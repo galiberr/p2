@@ -38,7 +38,7 @@ class xkcd {
                  * If word array is empty, fill it
                  */
                 if (!array_key_exists('words', $_SESSION)) {
-                        $_SESSION['words'] = word_array();
+                        $_SESSION['words'] = words::word_array();
                 }
                 self::validate_min_chars();
                 self::validate_num_words();
